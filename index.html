@@ -3,85 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบจัดการหน้าที่พนักงาน - Compact Grid View</title>
+    <title>ระบบจัดการหน้าที่พนักงาน - Elderly Friendly View</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Kanit', sans-serif; background-color: #f0f2f5; }
+        body { font-family: 'Kanit', sans-serif; background-color: #e5e7eb; }
         .admin-only { display: none !important; }
         .is-admin .admin-only { display: inline-flex !important; }
-        .staff-btn { transition: all 0.2s; border: 2px solid transparent; }
-        .staff-btn.active { background-color: #1d4ed8; color: white; border-color: #60a5fa; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        /* ปรับแต่ง Scrollbar ให้ดูสะอาด */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+        
+        /* ปรับปุ่มพนักงานให้ใหญ่และกดง่าย */
+        .staff-btn { transition: all 0.2s; border: 3px solid #fff; font-size: 1.5rem; }
+        .staff-btn.active { background-color: #1e40af; color: white; border-color: #93c5fd; transform: scale(1.02); }
+        
+        /* กล่องงานเวอร์ชันเน้นตัวหนังสือใหญ่ */
+        .task-card { 
+            min-height: auto; 
+            padding: 10px 16px !important; 
+            border-left: 8px solid #3b82f6; 
+        }
     </style>
 </head>
 <body class="pb-20">
 
     <header class="bg-slate-900 text-white p-4 shadow-xl sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold flex items-center"><i class="fas fa-calendar-check mr-2 text-blue-400"></i> แผงควบคุมหน้าที่</h1>
+            <h1 class="text-2xl font-bold flex items-center"><i class="fas fa-list-check mr-3 text-yellow-400"></i> หน้าที่ของพวกเรา</h1>
             <div id="adminControls">
-                <button id="adminBtn" onclick="toggleAdmin()" class="bg-slate-800 hover:bg-blue-600 px-4 py-2 rounded-xl text-sm border border-slate-700 transition-all">
-                    <i class="fas fa-lock mr-1"></i> เข้าโหมดแก้ไข
+                <button id="adminBtn" onclick="toggleAdmin()" class="bg-slate-700 hover:bg-blue-600 px-5 py-2 rounded-xl text-lg border border-slate-600 transition-all">
+                    <i class="fas fa-lock mr-2"></i> แก้ไขข้อมูล
                 </button>
-                <button id="logoutBtn" onclick="logoutAdmin()" class="hidden bg-red-500 hover:bg-red-600 px-4 py-2 rounded-xl text-sm transition-all">
-                    <i class="fas fa-sign-out-alt mr-1"></i> ออกจากโหมดแก้ไข
+                <button id="logoutBtn" onclick="logoutAdmin()" class="hidden bg-red-500 hover:bg-red-600 px-5 py-2 rounded-xl text-lg">
+                    <i class="fas fa-sign-out-alt mr-2"></i> ปิดโหมดแก้ไข
                 </button>
             </div>
         </div>
     </header>
 
-    <div class="container mx-auto p-4 max-w-6xl">
+    <div class="container mx-auto p-4 max-w-7xl">
         
-        <!-- Search Box -->
-        <div class="relative mb-6">
-            <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></i>
-            <input type="text" id="searchInput" oninput="handleSearch()" placeholder="ค้นหางาน หรือ พนักงาน..." 
-                class="w-full pl-14 pr-4 py-4 rounded-2xl shadow-sm border-none focus:ring-2 focus:ring-blue-500 text-lg outline-none transition-all">
+        <!-- Search -->
+        <div class="relative mb-8">
+            <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-xl"></i>
+            <input type="text" id="searchInput" oninput="handleSearch()" placeholder="พิมพ์เพื่อค้นหา..." 
+                class="w-full pl-16 pr-4 py-5 rounded-2xl shadow-inner border-2 border-gray-300 focus:border-blue-500 text-2xl outline-none transition-all">
         </div>
 
         <!-- Admin Tools -->
-        <div class="admin-only w-full space-y-4 mb-8 animate-in slide-in-from-top duration-300">
+        <div class="admin-only w-full space-y-4 mb-8">
             <div class="grid md:grid-cols-2 gap-4">
-                <div class="bg-white p-5 rounded-2xl shadow-sm border-b-4 border-green-500">
-                    <h3 class="font-bold mb-3 text-xs text-gray-400 uppercase tracking-widest">เพิ่มพนักงาน</h3>
+                <div class="bg-white p-6 rounded-2xl shadow border-b-8 border-green-500">
+                    <h3 class="font-bold mb-4 text-xl">เพิ่มพนักงานใหม่</h3>
                     <div class="flex gap-2">
-                        <input type="text" id="staffNameInput" placeholder="ใส่ชื่อพนักงาน..." class="border p-3 rounded-xl flex-1 bg-gray-50 outline-none focus:bg-white transition-all">
-                        <button onclick="addStaff()" class="bg-green-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-green-700">เพิ่ม</button>
+                        <input type="text" id="staffNameInput" placeholder="ชื่อเล่น..." class="border-2 p-4 rounded-xl flex-1 text-xl bg-gray-50">
+                        <button onclick="addStaff()" class="bg-green-600 text-white px-8 py-4 rounded-xl font-bold text-xl hover:bg-green-700">เพิ่ม</button>
                     </div>
                 </div>
-                <div class="bg-white p-5 rounded-2xl shadow-sm border-b-4 border-blue-500">
-                    <h3 class="font-bold mb-2 text-xs text-gray-400 uppercase tracking-widest">นำเข่างานชุดใหญ่ (วางจาก Notepad)</h3>
-                    <select id="importStaffSelect" class="w-full border p-3 rounded-xl mb-2 text-sm bg-gray-50 outline-none"></select>
-                    <textarea id="bulkTaskInput" rows="2" placeholder="วางรายการงาน... (แยกด้วย / หรือ ขึ้นบรรทัดใหม่)" class="w-full border p-3 rounded-xl text-sm bg-gray-50 outline-none mb-2"></textarea>
-                    <button onclick="importBulkTasks()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700">ยืนยันนำเข้าข้อมูล</button>
+                <div class="bg-white p-6 rounded-2xl shadow border-b-8 border-blue-500">
+                    <h3 class="font-bold mb-3 text-xl">ดึงข้อมูลจากคอม (Notepad)</h3>
+                    <select id="importStaffSelect" class="w-full border-2 p-3 rounded-xl mb-3 text-xl bg-gray-50"></select>
+                    <textarea id="bulkTaskInput" rows="2" placeholder="วางข้อความที่ก๊อปมา..." class="w-full border-2 p-3 rounded-xl text-xl bg-gray-50 mb-3"></textarea>
+                    <button onclick="importBulkTasks()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-xl hover:bg-blue-700">เริ่มนำเข้า</button>
                 </div>
             </div>
         </div>
 
-        <!-- Tab Switching -->
-        <div class="flex bg-white rounded-2xl shadow-sm mb-6 p-1.5 border border-gray-100">
-            <button onclick="switchTab('staff')" id="tabStaff" class="flex-1 py-3 font-bold rounded-xl transition-all duration-300">รายชื่อพนักงาน</button>
-            <button onclick="switchTab('tasks')" id="tabTasks" class="flex-1 py-3 font-bold rounded-xl text-gray-400 transition-all duration-300">ดูเนื้องานรวมทั้งหมด</button>
+        <!-- Tabs -->
+        <div class="flex bg-gray-300 rounded-2xl p-2 mb-8 gap-2 shadow-inner">
+            <button onclick="switchTab('staff')" id="tabStaff" class="flex-1 py-5 text-2xl font-bold rounded-xl transition-all">ดูรายชื่อคน</button>
+            <button onclick="switchTab('tasks')" id="tabTasks" class="flex-1 py-5 text-2xl font-bold rounded-xl text-gray-600 transition-all">ดูงานทั้งหมด</button>
         </div>
 
-        <!-- Main Content Area -->
+        <!-- Main Content -->
         <div id="staffViewContainer">
-            <div id="staffButtonGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-8">
+            <div id="staffButtonGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-10">
                 <!-- ปุ่มพนักงาน -->
             </div>
             
-            <div id="staffDetailView" class="hidden animate-in zoom-in-95 duration-300">
-                <!-- แผงแสดงงาน (ที่จะปรับเป็น Grid) -->
+            <div id="staffDetailView" class="hidden">
+                <!-- รายการงานที่จะเน้นตัวหนังสือใหญ่มาก -->
             </div>
         </div>
 
-        <div id="tasksViewContainer" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            <!-- หน้ารวมงานทั้งหมดแบบ Grid -->
+        <div id="tasksViewContainer" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- หน้ารวมงานทั้งหมด -->
         </div>
 
     </div>
@@ -112,7 +117,7 @@
 
         // --- Auth ---
         window.toggleAdmin = () => {
-            if (prompt("กรุณาใส่รหัสผ่านเจ้าของร้าน:") === "202429") {
+            if (prompt("รหัสผ่านเจ้าของร้าน:") === "202429") {
                 isAdmin = true;
                 document.body.classList.add('is-admin');
                 document.getElementById('adminBtn').classList.add('hidden');
@@ -120,7 +125,6 @@
                 renderAll();
             }
         };
-
         window.logoutAdmin = () => {
             isAdmin = false;
             document.body.classList.remove('is-admin');
@@ -129,13 +133,12 @@
             renderAll();
         };
 
-        // --- Listeners ---
+        // --- Data ---
         onValue(ref(db, 'employees'), (snap) => {
             employees = snap.val() || {};
             updateImportSelect();
             renderAll();
         });
-
         onValue(ref(db, 'tasks'), (snap) => {
             tasks = snap.val() || {};
             renderAll();
@@ -146,19 +149,16 @@
             const name = document.getElementById('staffNameInput').value;
             if(name) { push(ref(db, 'employees'), { name }); document.getElementById('staffNameInput').value = ''; }
         };
-
         window.editStaffName = (id, old) => {
             const n = prompt("แก้ไขชื่อ:", old);
             if(n && n !== old) update(ref(db, `employees/${id}`), { name: n });
         };
-
         window.editTaskTitle = (id, old) => {
             const n = prompt("แก้ไขงาน:", old);
             if(n && n !== old) update(ref(db, `tasks/${id}`), { title: n });
         };
-
         window.deleteStaff = (id) => { if(confirm("ลบพนักงาน?")) remove(ref(db, `employees/${id}`)); };
-        window.deleteTask = (id) => { if(confirm("ลบงาน?")) remove(ref(db, `tasks/${id}`)); };
+        window.deleteTask = (id) => { if(confirm("ลบงานนี้?")) remove(ref(db, `tasks/${id}`)); };
 
         window.importBulkTasks = () => {
             const empId = document.getElementById('importStaffSelect').value;
@@ -181,12 +181,12 @@
             const tT = document.getElementById('tabTasks');
             if(tab === 'staff') {
                 sView.classList.remove('hidden'); tView.classList.add('hidden');
-                tS.classList.add('bg-blue-600', 'text-white'); tS.classList.remove('text-gray-400');
-                tT.classList.remove('bg-blue-600', 'text-white'); tT.classList.add('text-gray-400');
+                tS.classList.add('bg-blue-700', 'text-white'); tS.classList.remove('text-gray-600');
+                tT.classList.remove('bg-blue-700', 'text-white'); tT.classList.add('text-gray-600');
             } else {
                 sView.classList.add('hidden'); tView.classList.remove('hidden');
-                tT.classList.add('bg-blue-600', 'text-white'); tT.classList.remove('text-gray-400');
-                tS.classList.remove('bg-blue-600', 'text-white'); tS.classList.add('text-gray-400');
+                tT.classList.add('bg-blue-700', 'text-white'); tT.classList.remove('text-gray-600');
+                tS.classList.remove('bg-blue-700', 'text-white'); tS.classList.add('text-gray-600');
             }
         };
 
@@ -197,7 +197,7 @@
 
         function updateImportSelect() {
             const el = document.getElementById('importStaffSelect');
-            el.innerHTML = '<option value="">-- เลือกพนักงาน --</option>' + 
+            el.innerHTML = '<option value="">-- เลือกคนงาน --</option>' + 
                 Object.keys(employees).map(id => `<option value="${id}">${employees[id].name}</option>`).join('');
         }
 
@@ -205,7 +205,7 @@
             renderStaffButtons();
             renderStaffDetail();
             renderTasksTotal();
-            if(!document.getElementById('tabStaff').classList.contains('bg-blue-600') && !document.getElementById('tabTasks').classList.contains('bg-blue-600')) {
+            if(!document.getElementById('tabStaff').classList.contains('bg-blue-700') && !document.getElementById('tabTasks').classList.contains('bg-blue-700')) {
                 switchTab('staff');
             }
         }
@@ -218,13 +218,12 @@
                 return `
                     <div class="relative group">
                         <button onclick="selectStaff('${id}')" 
-                            class="staff-btn w-full py-4 px-2 rounded-2xl bg-white shadow-sm font-bold text-gray-700 hover:border-blue-400 ${selectedStaffId === id ? 'active' : ''}">
-                            <div class="text-xs opacity-40 mb-1"><i class="fas fa-user"></i></div>
-                            <div class="truncate px-1">${name}</div>
+                            class="staff-btn w-full py-8 px-2 rounded-2xl bg-white shadow-md font-bold text-gray-800 border-gray-200 hover:border-blue-500 ${selectedStaffId === id ? 'active' : ''}">
+                            ${name}
                         </button>
-                        <div class="admin-only absolute -top-1 -right-1 flex gap-1 scale-90">
-                            <button onclick="editStaffName('${id}', '${name}')" class="bg-blue-500 text-white w-7 h-7 rounded-full shadow-lg border-2 border-white"><i class="fas fa-pen text-[10px]"></i></button>
-                            <button onclick="deleteStaff('${id}')" class="bg-red-500 text-white w-7 h-7 rounded-full shadow-lg border-2 border-white"><i class="fas fa-times text-[10px]"></i></button>
+                        <div class="admin-only absolute -top-2 -right-2 flex gap-1">
+                            <button onclick="editStaffName('${id}', '${name}')" class="bg-blue-500 text-white w-10 h-10 rounded-full shadow-lg border-2 border-white"><i class="fas fa-pen text-sm"></i></button>
+                            <button onclick="deleteStaff('${id}')" class="bg-red-500 text-white w-10 h-10 rounded-full shadow-lg border-2 border-white"><i class="fas fa-times text-sm"></i></button>
                         </div>
                     </div>
                 `;
@@ -238,28 +237,27 @@
             const name = employees[selectedStaffId]?.name || '';
             const staffTasks = Object.keys(tasks).filter(tid => tasks[tid].assignedTo?.includes(selectedStaffId));
 
-            // ปรับตรงนี้ให้เป็น Grid 2-3 คอลัมน์
             detail.innerHTML = `
-                <div class="bg-white rounded-3xl p-6 shadow-sm border border-blue-50">
-                    <div class="flex justify-between items-center mb-6 border-b pb-4">
-                        <h2 class="text-xl font-bold text-slate-800"><i class="fas fa-list-ul mr-2 text-blue-500"></i>รายการงานของ: <span class="text-blue-600">${name}</span></h2>
-                        <span class="bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-sm font-bold border border-blue-100">${staffTasks.length} งาน</span>
+                <div class="bg-white rounded-3xl p-8 shadow-xl border-t-8 border-blue-600">
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-4xl font-bold text-slate-900">งานของ <span class="text-blue-700 underline">${name}</span></h2>
+                        <span class="bg-yellow-400 text-slate-900 px-6 py-2 rounded-full text-2xl font-black">${staffTasks.length} อย่าง</span>
                     </div>
                     
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
                         ${staffTasks.map(tid => `
-                            <div class="flex flex-col justify-between bg-slate-50 p-4 rounded-2xl border border-slate-100 hover:shadow-md transition-all group relative min-h-[80px]">
-                                <div class="text-slate-700 text-sm font-medium leading-relaxed mb-2">${tasks[tid].title}</div>
-                                <div class="admin-only flex justify-end gap-3 mt-auto pt-2 border-t border-slate-200/50">
-                                    <button onclick="editTaskTitle('${tid}', '${tasks[tid].title}')" class="text-blue-500 text-xs font-bold hover:underline"><i class="fas fa-edit mr-1"></i>แก้</button>
-                                    <button onclick="deleteTask('${tid}')" class="text-red-400 text-xs font-bold hover:underline"><i class="fas fa-trash mr-1"></i>ลบ</button>
+                            <div class="task-card flex justify-between items-center bg-gray-100 rounded-xl border border-gray-300 hover:bg-white transition-all">
+                                <div class="text-slate-900 text-2xl font-bold leading-tight py-2">${tasks[tid].title}</div>
+                                <div class="admin-only flex gap-4 ml-4">
+                                    <button onclick="editTaskTitle('${tid}', '${tasks[tid].title}')" class="text-blue-600 text-lg font-bold"><i class="fas fa-edit"></i></button>
+                                    <button onclick="deleteTask('${tid}')" class="text-red-500 text-lg font-bold"><i class="fas fa-trash-alt"></i></button>
                                 </div>
                             </div>
-                        `).join('') || '<p class="col-span-full text-center text-gray-400 py-10">ไม่มีงานที่ได้รับมอบหมาย</p>'}
+                        `).join('') || '<p class="col-span-full text-center text-gray-400 py-10 text-2xl">ยังไม่มีงาน</p>'}
                     </div>
 
-                    <button onclick="selectStaff(null)" class="mt-8 w-full py-4 text-gray-400 text-xs font-bold hover:text-blue-500 transition-colors uppercase tracking-widest border-t border-dashed">
-                        <i class="fas fa-chevron-up mr-2"></i> ปิดหน้านี้
+                    <button onclick="selectStaff(null)" class="mt-12 w-full py-6 bg-slate-200 rounded-2xl text-2xl font-bold text-slate-500 hover:bg-slate-300 transition-colors uppercase">
+                        <i class="fas fa-chevron-up mr-3"></i> เก็บรายการงาน
                     </button>
                 </div>
             `;
@@ -267,22 +265,19 @@
 
         function renderTasksTotal() {
             const container = document.getElementById('tasksViewContainer');
-            const taskKeys = Object.keys(tasks);
-            container.innerHTML = taskKeys.map(tid => {
+            container.innerHTML = Object.keys(tasks).map(tid => {
                 const title = tasks[tid].title;
-                const assigned = (tasks[tid].assignedTo || []).map(eid => employees[eid]?.name || 'Unknown').join(', ');
+                const assigned = (tasks[tid].assignedTo || []).map(eid => employees[eid]?.name || '').join(', ');
                 if(currentSearch !== "" && !title.toLowerCase().includes(currentSearch) && !assigned.toLowerCase().includes(currentSearch)) return '';
                 
                 return `
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between hover:border-blue-200 transition-all">
-                        <div class="text-slate-800 font-bold text-sm mb-2">${title}</div>
-                        <div class="flex justify-between items-end">
-                            <div class="text-[10px] bg-blue-50 text-blue-600 font-bold px-2 py-1 rounded-lg border border-blue-100 truncate max-w-[150px]">
-                                <i class="fas fa-user-tag mr-1"></i> ${assigned}
-                            </div>
-                            <div class="admin-only flex gap-3 text-[10px] font-bold">
-                                <button onclick="editTaskTitle('${tid}', '${title}')" class="text-blue-500">แก้</button>
-                                <button onclick="deleteTask('${tid}')" class="text-red-400">ลบ</button>
+                    <div class="bg-white p-5 rounded-2xl shadow border-l-8 border-blue-400 flex flex-col justify-center">
+                        <div class="text-slate-900 font-bold text-2xl mb-1">${title}</div>
+                        <div class="flex justify-between items-center">
+                            <div class="text-xl text-blue-700 font-semibold italic">คนทำ: ${assigned}</div>
+                            <div class="admin-only flex gap-4">
+                                <button onclick="editTaskTitle('${tid}', '${title}')" class="text-blue-500 text-xl"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteTask('${tid}')" class="text-red-400 text-xl"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>
                     </div>
